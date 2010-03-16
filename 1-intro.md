@@ -134,10 +134,10 @@
 !SLIDE
 # Intuistionistic logic
 
-Classical logic says every statement must inherently be true or false
+*Classical logic:* every statement must inherently be true or false
 
-Intuistionistic logic says a statement must first be proven to be
-considered "true"
+*Intuistionistic logic:* a statement is only "true" if you have a
+ proof for it
 
 // the concept of the proof is a part of the semantics
 // as we have seen, the intuistionistic approach has more value in a
@@ -161,8 +161,44 @@ considered "true"
 TODO
 
 // may seem limiting, but not when an emphasis on inductive
-// ("recursive") definitions is placed
+// ("recursive") definitions is placed that limit what you must write
+out to the base & recursive cases
 
 !SLIDE
 # Termination checking
 TODO
+
+!SLIDE
+# Magic inverse
+TODO
+
+!SLIDE
+# Universal quantification
+TODO
+
+!SLIDE
+# Existential quantification
+TODO
+
+!SLIDE
+# Compositional tests/proofs/lemmas
+
+// proofs are inherently compositional!
+
+// unit tests can be reused literally in integration tests
+// ... no more leaving it up to hope that the results of one confirm
+// results in the other
+
+// what is a unit test and what is an integration test is relative... can
+// be at all levels between app code, library code, framework code,
+// between web services, etc!
+// ... cures the problem of the explosion of tiny services that must be
+// somehow confirmed to work together
+
+!SLIDE
+# Libraries: code + proofs!
+
+// think about how much time is wasted by starting from scratch with
+// each project... a framework can come with universally quantified
+// lemmas that you instantiate with your particular application
+
