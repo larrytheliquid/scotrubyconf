@@ -1,0 +1,73 @@
+this is addressed at issues that come up in production software, not
+one-off apps hacked together
+
+why:
+need less runtime crashes
+need less bugs
+need to be able to trust in an application we've written
+... not stay up at night worrying if some remote part of the big
+system we just modified was affected by a big change we just made
+... need to not reach a maintenance dead end on large projects!
+(typical story of productive feature releases early that comes to a
+grinding maintenance halt later where a new feature introduction
+requires a lot of time assuring that nothing else was affected
+
+solution?
+all roads lead to testing
+
+... could at this point introduce all problems and then solve each
+one, or introduce/solve as i get to them, or introduce/preview-solve
+and then in depth solve
+
+... as much as we advocate testing, there are still many unsolved
+problems in the area
+
+when you try to test monolithic code, you can a combinatorial
+explosion of test scenarios that becomes impractical to write
+... then you break software up into encapsulated & loosely coupled
+chunks
+... this works, making something possible to fit all in your head and
+feasible/easy to test, as evident by small single-purpose web services
+(e.g. and/or middleware mounted rack/sinatra apps), specific
+gems/libraries, etc
+... but now you have the problem of testing/ensuring that the whole
+works together correctly & uses each chunk according to its
+(parameter) expectations
+... in fact the combinatoric part of the problem may have grown as the
+libraries are more general than your specific monolithic software
+
+separately, we also have the problem of debugging runtime errors, &
+there existence at all
+
+if testing really is the answer, we have some problems to solve:
+* [coverage checking] needing to test all possible inputs from a user to ensure a lack of
+runtime errors
+* [proofs as programs] integration of several encapsulated & loosely coupled services
+* [universal quant] relying on trust that a library we are using works
+... duplicating tests that a library may have covered "just to be sure" in AR, etc)
+... or just trust the library
+* [implicit tests] the increasingly large, to the point of being itself
+incomprehensible, test suite of a growing mature project
+... is the solution a static language like scala, ocaml, f#, or even
+haskell?
+... no! they all have the same problems... but not with dependent
+types
+
+ok... so coverage completeness drastically reduces runtime
+errors... great, many less embarrassing 500 pages
+you might expect that coverage completeness would just shift runtime
+errors into logic errors... and indeed they normally would
+... but these too can be prevented via preconditions... at compile
+time, not runtime exceptions!
+
+what is considered an integration test is relative
+
+testing can come in shapes and sizes you might not expect
+... implicit (using an abstraction, or specialized type) vs explicit
+testing
+... as rubyists we are used to doing mostly explicit testing, but we
+also use abstractions to help ensure correctness without worrying
+about it (rails, etc)... with a sufficiently advanced type system, a
+particular datatype can be such an abstraction except have guaranteed
+correctness properties visible in the type signature instead of
+assumed ones by an object, a function, etc

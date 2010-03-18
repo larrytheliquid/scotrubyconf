@@ -34,10 +34,10 @@
 * framework tests
 * end-user application tests
 
-// TDD, BDD, zillions of test libraries, cucumber, etc
+// TDD, BDD, tons of test libraries, cucumber, etc
 // fair to say that rubyists care about testing
 
-// with so much though, time & energy spent on testing, it is worth
+// with so much thought, time & energy spent on testing, it is worth
 // exploring languages which make it easier & possible to express more
 // meaningful guarantees
 
@@ -89,6 +89,8 @@
 
 // imagine how confusing a ? predicate method that mutates could
 // be... conventions are not enough
+
+TODO: May want to mention simple non-dependent curry-howard here?
 
 !SLIDE bullets
 # Ruby test assertions
