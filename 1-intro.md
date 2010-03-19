@@ -11,6 +11,13 @@ an advanced form of static typing
 will be using agda, but conceptually equivalent to other dependently
 typed languages
 
+many other arguments have been given in support of functional
+languages such as easier parallelism, benefits of laziness, & benefits
+of modularity
+
+this will instead present an argument to a more fundamental problem
+... scaling application complexity wrt testing
+
 huge topic, will present a high-level version with an
 emphasis on testing
 
@@ -76,24 +83,74 @@ how i feel now about dynamically typed languages (as well as
 trivial statical typing)
 
 i think that this type theory is industry-changing, not some
-interesting but ultimately irrelevant topic... from my perspective
-most other languages & code written in them are legacy
+interesting but ultimately irrelevant topic... i now see
+most other languages & code written in them as legacy
 
 ...if you're watching this and have an instinctive negative
 defensive mental reaction... i completely understand where you're
 coming from... i invite you instead to notice this irrational behavior
-& instead ignore it in favor of an open mind
+& ignore it in favor of an open mind
 
-scaling application complexity
+!SLIDE
+# General problems at scale #
+
+* need less runtime crashes
+* need less bugs
+* need trust in a deployed application
+
+<div style="display: none">
+
 developing understandable & trustworthy large applications right now sucks
 
-many other arguments have been given in support of functional
-languages such as easier parallelism, benefits of laziness, & benefits
-of modularity
+need to not stay up at night worrying if some remote part of the big
+system we just modified was affected by a big change we just made
 
-this will instead present an argument of easier and better testing
+need to not reach a maintenance dead end on large projects!
+(typical story of productive feature releases early that comes to a
+grinding maintenance halt later where a new feature introduction
+requires a lot of time assuring that nothing else was affected
 
-... now go into the current open problems & solutions for them
+solution, as we've found, lies in testing... but there are still many
+open problems that need to be solved
+
+!SLIDE
+# What happens at scale #
+
+<div style="display: none">
+
+when you try to test monolithic code, you get a combinatorial
+explosion of test scenarios that becomes impractical to write
+... then you break software up into encapsulated & loosely coupled
+chunks
+... this works, making something possible to fit all in your head and
+feasible/easy to test, as evident by small single-purpose web services
+(e.g. and/or middleware mounted rack/sinatra apps), specific
+gems/libraries, etc
+... but now you have the problem of testing/ensuring that the whole
+works together correctly & uses each chunk according to its
+(parameter) expectations
+... in fact the combinatoric part of the problem may have grown as the
+libraries are more general than your specific monolithic software
+
+separately, we also have the problem of debugging runtime errors, &
+there existence at all
+
+!SLIDE
+# Specific problems at scale #
+
+* [coverage checking] needing to test all possible inputs from a user to ensure a lack of
+runtime errors
+* [lemmas] integration of several encapsulated & loosely coupled services
+TODO: mention "proofs-as-programs"?
+* [universal quantification] relying on trust that a library we are using works
+... duplicating tests that a library may have covered "just to be sure" in AR, etc)
+... or just trust the library
+* [implicit tests] the increasingly large, to the point of being itself
+incomprehensible, test suite of a growing mature project
+
+<div style="display: none">
+
+there is a solution to all of these with dependent types
 
 !SLIDE
 # Ruby VS purely functional
@@ -204,9 +261,19 @@ TODO: May want to mention simple non-dependent curry-howard here?
 # Coverage checking
 TODO
 
-// may seem limiting, but not when an emphasis on inductive
-// ("recursive") definitions is placed that limit what you must write
+<div style="display: none">
+
+in ruby this wouldn't work because you would need to treat each
+argument as any kind of object with any variation of defined methods
+
+think about a function that would need to have a case for every single
+number... seems impractical
+
+may seem limiting, but not when an emphasis on inductive
+("recursive") definitions is placed that limit what you must write
 out to the base & recursive cases
+
+TODO: string example = defaults?
 
 !SLIDE
 # Termination checking
