@@ -1,6 +1,9 @@
 this is addressed at issues that come up in production software, not
 one-off apps hacked together
 
+there are plenty of talks about scaling performance
+characteristics... this talk is about another kind of scaling... application complexity
+
 why:
 need less runtime crashes
 need less bugs
@@ -71,3 +74,10 @@ about it (rails, etc)... with a sufficiently advanced type system, a
 particular datatype can be such an abstraction except have guaranteed
 correctness properties visible in the type signature instead of
 assumed ones by an object, a function, etc
+
+- need to reveal what dependent types are:
+1. no distinction between types & values wrt first-classiness
+2. left-to-right dependency possible in types via labeling
+
+maybe reference the beautiful membership->any->setoid->equivalence
+... in other words the ability to encode math as you'd define it in a textbook
