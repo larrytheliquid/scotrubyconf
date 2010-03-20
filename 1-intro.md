@@ -139,7 +139,7 @@ libraries are more general than your specific monolithic software
 separately, we also have the problem of debugging runtime errors,
 which become easier to introduce in large applications
 
-!SLIDE
+!SLIDE smbullets
 # Specific problems at scale #
 
 * [coverage checking] needing to test all possible inputs to ensure a lack of
@@ -165,7 +165,7 @@ Coverage checking
 =================
 
 !SLIDE
-   data Day : Set where
+    data Day : Set where
       Monday Tuesday Wednesday : Day
       Thursday Friday : Day
       Saturday Sunday : Day
@@ -215,7 +215,7 @@ Implicit tests
  
     isBestDay : GoodDay → Bool
     isBestDay Saturday = true
-    isBestDay _ = true
+    isBestDay _ = false
 
     toWeekday : GoodDay → Day
     toWeekday Friday = Friday
@@ -316,6 +316,9 @@ here we get a compile time error, not a run time exception!!!
     lookup : {A : Set}(n : ℕ)(xs : List A)
              {_ : ↑ (n < length xs)} → A
 
+    isBestDay : (d : Day) → 
+                {_ : ↑ (isGoodDay d) → Bool
+
 <div style="display: none">
 
 ... this is a really big deal, because we can encode arbitrary
@@ -324,6 +327,9 @@ zero errors!!!... no more index out of bounds errors!
 
 note that we just leave the label for "precondition" blank to show our
 intent of not using it
+
+and finally note that we could also avoid creating a separate GoodDay
+type and use preconditions instead if we wanted to
 
 !SLIDE
     fromWeekday : (day : Day) → 
