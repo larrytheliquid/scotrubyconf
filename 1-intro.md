@@ -478,6 +478,44 @@ will be of length exactly one less than the argument
 note that we could have also used implicit isEmpty preconditions in
 the list versions... good to have choices
 
+!SLIDE
+    data SortedList-ℕ : ℕ → Set where
+      [] : SortedList-ℕ zero
+      _∷_ : {n : ℕ} →
+            (x : ℕ) →
+            SortedList-ℕ n →
+            {_ : ↑ (n ≤ x)} →
+            SortedList-ℕ x
+
+<div style="display: none">
+
+values are correct by construction
+
+this has incredible value... you never have to think about the
+possibility that an expected sorted list is not actually sorted when
+researching the cause of a bug!!!
+
+!SLIDE
+    sortedList-ℕ : SortedList-ℕ 8
+    sortedList-ℕ = 8 ∷ 7 ∷ 2 ∷ []
+    
+    insert : {n : ℕ}(x : ℕ)
+             → SortedList-ℕ n
+             → SortedList-ℕ (x ⊔ n)
+
+<div style="display: none">
+
+if we break the sorted list semantics, we get a compilation error
+
+here a large part of the semantics of the insert function is captured by its
+type (without looking at the implementation)!!!
+
+... the epitome of types as documentation that can't go out of date
+(similar to how more familiar explicit tests act as documentation that
+can't go out of date)
+
+can also make types for things like balanced binary trees, etc
+
 !SLIDE bullets
 # Ruby test assertions
 

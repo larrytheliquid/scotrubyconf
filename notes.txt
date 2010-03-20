@@ -1,3 +1,10 @@
+when mentioning curry-howard, can point back at the construction of a
+sortedlist having the (implicit) proof embedded in it
+
+=================
+may want to show how any/dtpa proof-carrying-code can be used
+
+==============================
 
 monads for isolation of side effecting code from pure code is really
 another form of implicit testing
