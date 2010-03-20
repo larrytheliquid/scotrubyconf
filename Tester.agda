@@ -5,6 +5,14 @@ open import Relation.Binary.PropositionalEquality
 open import Data.Unit hiding (_≤_)
 open import Data.Empty
 
+-- data _≡_ {A : Set} (x : A) : A → Set where
+--   refl : x ≡ x
+--   bogus : {y : A} → x ≡ y
+
+-- eh : true ≡ false
+-- eh = bogus
+
+
 _≤_ : ℕ → ℕ → Bool
 zero ≤ _ = true
 suc _ ≤ zero = false
@@ -27,37 +35,46 @@ postulate insert : {n : ℕ}(x : ℕ)
                    → SortedList-ℕ n
                    → SortedList-ℕ (x ⊔ n)
 
--- data Day : Set where
---   Monday Tuesday Wednesday : Day
---   Thursday Friday : Day
---   Saturday Sunday : Day
+data Day : Set where
+  Monday Tuesday Wednesday : Day
+  Thursday Friday : Day
+  Saturday Sunday : Day
  
--- isGoodDay : Day → Bool
--- isGoodDay Friday = true
--- isGoodDay Saturday = true
--- isGoodDay Sunday = true
--- isGoodDay _ = false 
+isGoodDay : Day → Bool
+isGoodDay Friday = true
+isGoodDay Saturday = true
+isGoodDay Sunday = true
+isGoodDay _ = false
 
--- data GoodDay : Set where
---   Friday Saturday Sunday : GoodDay
+isWeekDay : Day → Bool
+isWeekDay day = not (isGoodDay day)
 
--- fromWeekday : (day : Day) → {_ : T (isGoodDay day)} → GoodDay
--- fromWeekday Friday = Friday
--- fromWeekday Saturday = Saturday
--- fromWeekday Sunday = Sunday
--- fromWeekday _ = Friday
+data GoodDay : Set where
+  Friday Saturday Sunday : GoodDay
 
--- compileError : GoodDay
--- compileError = fromWeekday Tuesday
+toDay : GoodDay → Day
+toDay Friday = Friday
+toDay Saturday = Saturday
+toDay Sunday = Sunday
 
--- fromWeekday : (day : Day) → {_ : T (isGoodDay day)} → GoodDay
--- fromWeekday Friday = Friday
--- fromWeekday Saturday = Saturday
--- fromWeekday Sunday = Sunday
--- fromWeekday Monday {()}
--- fromWeekday Tuesday {()}
--- fromWeekday Wednesday {()}
--- fromWeekday Thursday {()}
+goodDaysAreGood : (good : GoodDay) →
+                  isGoodDay (toDay good) ≡ true
+goodDaysAreGood Friday = refl
+goodDaysAreGood Saturday = refl
+goodDaysAreGood Sunday = refl
+
+goodDaysAreNotWeekdays : (good : GoodDay) →
+                         isWeekDay (toDay good) ≡ false
+goodDaysAreNotWeekdays good rewrite goodDaysAreGood good = refl
+
+-- fromDay : (day : Day) → {_ : T (isGoodDay day)} → GoodDay
+-- fromDay Friday = Friday
+-- fromDay Saturday = Saturday
+-- fromDay Sunday = Sunday
+-- fromDay Monday {()}
+-- fromDay Tuesday {()}
+-- fromDay Wednesday {()}
+-- fromDay Thursday {()}
 
 
 -- -- maybe use something more simple like adding 2

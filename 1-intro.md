@@ -182,6 +182,9 @@ Coverage checking
     isGoodDay Sunday = true
     isGoodDay _ = false
 
+    isWeekDay : Day → Bool
+    isWeekDay day = not (isGoodDay day)
+
 <div style="display: none">
 
 in ruby this wouldn't work because you would need to treat each
@@ -223,10 +226,10 @@ Implicit tests
     isBestDay Saturday = true
     isBestDay _ = false
 
-    toWeekday : GoodDay → Day
-    toWeekday Friday = Friday
-    toWeekday Saturday = Saturday
-    toWeekday Sunday = Sunday
+    toDay : GoodDay → Day
+    toDay Friday = Friday
+    toDay Saturday = Saturday
+    toDay Sunday = Sunday
 
 <div style="display: none">
 
@@ -246,11 +249,11 @@ notice that constructors across multiple types can have same names, and can be
 differentiated by the type signature they are in
 
 !SLIDE
-    fromWeekday : Day → GoodDay
-    fromWeekday Friday = Friday
-    fromWeekday Saturday = Saturday
-    fromWeekday Sunday = Sunday
-    fromWeekday _ = Friday
+    fromDay : Day → GoodDay
+    fromDay Friday = Friday
+    fromDay Saturday = Saturday
+    fromDay Sunday = Sunday
+    fromDay _ = Friday
 
 <div style="display: none">
 
@@ -290,16 +293,16 @@ that the wall separating the world of types & the world of values has
 been torn down
 
 !SLIDE
-    fromWeekday : (day : Day) → 
-                  {precondition : ↑ (isGoodDay day)} → 
-                  GoodDay
-    fromWeekday Friday = Friday
-    fromWeekday Saturday = Saturday
-    fromWeekday Sunday = Sunday
-    fromWeekday _ = Friday
+    fromDay : (day : Day) → 
+              {precondition : ↑ (isGoodDay day)} → 
+              GoodDay
+    fromDay Friday = Friday
+    fromDay Saturday = Saturday
+    fromDay Sunday = Sunday
+    fromDay _ = Friday
 
     compileError : GoodDay
-    compileError = fromWeekday Tuesday
+    compileError = fromDay Tuesday
 
 <div style="display: none">
 
@@ -338,16 +341,16 @@ and finally note that we could also avoid creating a separate GoodDay
 type and use preconditions instead if we wanted to
 
 !SLIDE
-    fromWeekday : (day : Day) → 
-                {_ : ↑ (isGoodDay day)} → 
-                GoodDay
-    fromWeekday Friday = Friday
-    fromWeekday Saturday = Saturday
-    fromWeekday Sunday = Sunday
-    fromWeekday Monday {()}
-    fromWeekday Tuesday {()}
-    fromWeekday Wednesday {()}
-    fromWeekday Thursday {()}
+    fromDay : (day : Day) → 
+              {_ : ↑ (isGoodDay day)} → 
+              GoodDay
+    fromDay Friday = Friday
+    fromDay Saturday = Saturday
+    fromDay Sunday = Sunday
+    fromDay Monday {()}
+    fromDay Tuesday {()}
+    fromDay Wednesday {()}
+    fromDay Thursday {()}
 
 <div style="display: none">
 
@@ -515,82 +518,185 @@ type (without looking at the implementation)!!!
 can't go out of date)
 
 can also make types for things like balanced binary trees, etc
+... or imagine an AuthorizedUser to protect certain functions from
+only being accessed by those users
+
+!SLIDE subsection
+
+   Lemmas
+============
+
+<div style="display: none">
+
+going to move into some more familiar explicit testing now
 
 !SLIDE bullets
-# Ruby test assertions
+# Ruby test assertions #
 
 * comments of expected results
 * boolean comparison & returned boolean
 * boolean comparison & exception raised
 
-// dynamic!! (at run time)
-// the indicator we are left with of our "proven" fact is a boolean or
-// a string, neither of which have a semantic, language-level, tie
-// back to the assertion... "once you prove it, you lose it"
+<div style="display: none">
+
+dynamic!! (at run time)
+the indicator we are left with of our "proven" fact is a boolean or
+a string, neither of which have a semantic, language-level, tie
+back to the assertion... "once you prove it, you lose it"
+... any meaning we tie to these assertions in things like testing
+frameworks are purely by convention
+
+normal boolean tests are transformer functions that return a
+bool... what that bool means is immediately lost to language
+semantics, and we must rely on the convention that the bool
+represented some previous check, prone to error
 
 !SLIDE
-# Agda test assertions
+# Curry-Howard isomorphism #
 
-    fortyTwoIsEven : even 42 ≡ true
-    fortyTwoIsEven = refl
-    -- Checked
+    dayIsInhabited : Day
+    dayIsInhabited = Thursday
 
-    typeCheckingError : even 1337 ≡ true
+<div style="display: none">
+
+here that a Day exists is our proposition & Thursday is a proof of that
+
+in most type systems, making an analogy like doesn't gain you much
+... but with dependent types you can represent practically any
+arbitrary proposition
+
+we just saw a useful example: SortedList-ℕ
+... here the constructor value forces the implicit precondition to
+supply a proof of top (inhabited) or bottom (not inhabited)
+
+!SLIDE
+# Propositional equality #
+
+    data _≡_ {A : Set} (x : A) : A → Set where
+      refl : x ≡ x
+
+<div style="display: none">
+
+we can make a custom datatype to represent unit test assertions... all
+within the language 
+
+in the same way that we could just pick a number to constrain a vector
+length to, we can pick what the function returns (evaluated to) as the
+index in order to have a valid constructor for it (refl)
+
+note that we can pick any two arbitrary values (of the same type) to
+have a validly typed proposition
+
+the reuse of the variable x in the dependency expressed in refl
+happens to enforce the equality between the 2 terms in the proposition
+... remember back to the Vec [] constructor using zero as its index
+for an arbitrary value in ℕ... here we reuse x "arbitrarily"
+
+!SLIDE
+# Agda test assertions #
+
+    fridayIsGoodDay : isGoodDay Friday ≡ true
+    fridayIsGoodDay = refl
+
+    typeCheckingError : isGoodDay Wednesday ≡ true
     typeCheckingError = refl
     -- /home/larrytheliquid/src/scotrubyconf/Tester.agda:27,21-25
     -- false != true of type Bool
     -- when checking that the expression refl has type false ≡ true
 
-// normal boolean tests are transformer functions that return a
-// bool... what that bool means is immediately lost to language
-// semantics, and we must rely on the convention that the bool
-// represented some previous check, prone to error
+<div style="display: none">
 
-// static!! (at compile time)
-// assertions happens at the type level
+static!! (at compile time)
+assertions happens at the type level
 
-// this proof can be done automatically "by interpretation" when you
-// mention refl, as even is called with specific & complete args
+these can be arbitrary return values, not just booleans
 
-// refl acts as a first-class proof in the language of our assertion; we
-// can store it in a variable, pass it around to other functions as
-// arguments, etc
+this proof can be done automatically "by interpretation" when you
+mention refl, as isGoodDay is called with specific & complete args
 
-// if you are serious about testing, it's hard to go back to any language
-// that can't semantically encode tests after dependent types
+refl acts as a first-class proof in the language of our assertion; we
+can store it in a variable, pass it around to other functions as
+arguments, etc
 
-// i've been working on an agda project for 2 months that i haven't
-// "run" once, just compiled... but i'm sure it works as it's fully tested!
+once you have a type-checked refl you have unified those 2 values with
+respect to the compiler... these can be reused in other proofs as
+"lemmas"... this is literal reuse within the semantics of the
+language, not arbitrary reuse according to conventions
+
+if you are serious about testing, it's hard to go back to any language
+that can't semantically encode tests after dependent
+types... especially so elegantly in 2 lines of code... it is beautiful
+
+i've been working on an agda project for 2 months that i haven't
+"run" once, just compiled... but i'm sure it works as it's fully
+tested!
+... note how the lines between run time and compile time blur with
+the ability dependent types give you to interchange where you'd
+typical use the two... this is a major reason why you should consider
+using this type theory as someone used to dynamic typing... you get
+all the advantages of static typing while being able to execute
+arbitrary "dynamic value code" in unrestricted places... e.g. perform
+function calls in types during compile time in order to achieve unit
+testing
+... this even makes things like a repl much less necessary, as TDD'ers
+have experienced with using testing frameworks & tests to
+prototype/design behavior/etc
 
 !SLIDE
-# Intuistionistic logic
+# Intuistionistic logic #
 
 *Classical logic:* every statement must inherently be true or false
 
 *Intuistionistic logic:* a statement is only "true" if you have a
  proof for it
 
-// the concept of the proof is a part of the semantics
-// as we have seen, the intuistionistic approach has more value in a
-// programming language
+<div style="display: none">
+
+the concept of the proof is a part of the semantics
+as we have seen, the intuistionistic approach has more value in a
+programming language
+
+!SLIDE subsection
+
+Universal quantification
+========================
 
 !SLIDE
-# Propositional equality datatype
+    goodDaysAreGood : (good : GoodDay) →
+                      isGoodDay (toDay good) ≡ true
+    goodDaysAreGood Friday = refl
+    goodDaysAreGood Saturday = refl
+    goodDaysAreGood Sunday = refl
 
-    data _≡_ {A : Set} (x : A) : A → Set where
-      refl : x ≡ x
+<div style="display: none">
 
-// will come back to this later, but only 2 lines of code for
-// statically checked assertions!
-// Also unifies both values
+notice that a parameterized dependent proposition can act as universal
+quantification we know from logic!!!
+
+thanks to coverage checking, doing this is guaranteed to be true for
+all GoodDays
 
 !SLIDE
-# Magic inverse
-TODO
+    goodDaysAreNotWeekdays : (good : GoodDay) →
+                             isWeekDay (toDay good) ≡ false
+    goodDaysAreNotWeekdays good rewrite goodDaysAreGood good = refl
 
-!SLIDE
-# Universal quantification
-TODO
+<div style="display: none">
+
+here is a really important bit... while trying to prove our more
+complex proposition we can reuse our already-proven smaller
+universally quantified proposition... which is really just a function
+that can be called with a GoodDay just like any other
+function... except it returns a proof value (refl) for that specific GoodDay
+... proofs are inherently compositional!!!
+... we use our previous proof as a lemma (helper proof) in this more
+complex proof
+.... now comes a really important realization: libraries can come with
+lemmas that you instantiate with values from your specific problem domain
+... so library/framework users can be more productive thanks to the
+work of the library/framework authors... true composition &
+modularity, which we talk about all the time in production code, can
+finally be had in the world of tests!!!!!! *super big deal*
 
 !SLIDE
 # Existential quantification
@@ -599,22 +705,24 @@ TODO
 !SLIDE
 # Compositional tests/proofs/lemmas
 
-// proofs are inherently compositional!
+<div style="display: none">
 
-// unit tests can be reused literally in integration tests
-// ... no more leaving it up to hope that the results of one confirm
-// results in the other
+unit tests can be reused literally in integration tests
+... no more leaving it up to hope that the results of one confirm
+results in the other
 
-// what is a unit test and what is an integration test is relative... can
-// be at all levels between app code, library code, framework code,
-// between web services, etc!
-// ... cures the problem of the explosion of tiny services that must be
-// somehow confirmed to work together
+what is a unit test and what is an integration test is relative... can
+be at all levels between app code, library code, framework code,
+between web services, etc!
+... cures the problem of the explosion of tiny services that must be
+somehow confirmed to work together
 
 !SLIDE
 # Libraries: code + proofs!
 
-// think about how much time is wasted by starting from scratch with
-// each project... a framework can come with universally quantified
-// lemmas that you instantiate with your particular application
+<div style="display: none">
+
+think about how much time is wasted by starting from scratch with
+each project... a framework can come with universally quantified
+lemmas that you instantiate with your particular application
 
