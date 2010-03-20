@@ -2,27 +2,62 @@ module Tester where
 open import Data.Nat
 open import Data.Bool
 open import Relation.Binary.PropositionalEquality
+open import Data.Unit
+open import Data.Empty
 
--- maybe use something more simple like adding 2
+data Day : Set where
+  Monday Tuesday Wednesday : Day
+  Thursday Friday : Day
+  Saturday Sunday : Day
+ 
+isGoodDay : Day → Bool
+isGoodDay Friday = true
+isGoodDay Saturday = true
+isGoodDay Sunday = true
+isGoodDay _ = false 
 
--- suc suc
-even : ℕ → Bool
-even zero = true
-even (suc zero) = false
-even (suc (suc n)) = even n
+data GoodDay : Set where
+  Friday Saturday Sunday : GoodDay
 
-zeroIsEven : even 0 ≡ true
-zeroIsEven = refl
+fromWeekday : (day : Day) → {_ : T (isGoodDay day)} → GoodDay
+fromWeekday Friday = Friday
+fromWeekday Saturday = Saturday
+fromWeekday Sunday = Sunday
+fromWeekday _ = Friday
 
-oneIsNotEven : even 1 ≡ false
-oneIsNotEven = refl
+-- compileError : GoodDay
+-- compileError = fromWeekday Tuesday
 
-sevenIsNotEven : even 7 ≡ false
-sevenIsNotEven = refl
+-- fromWeekday : (day : Day) → {_ : T (isGoodDay day)} → GoodDay
+-- fromWeekday Friday = Friday
+-- fromWeekday Saturday = Saturday
+-- fromWeekday Sunday = Sunday
+-- fromWeekday Monday {()}
+-- fromWeekday Tuesday {()}
+-- fromWeekday Wednesday {()}
+-- fromWeekday Thursday {()}
 
-fortyTwoIsEven : even 42 ≡ true
-fortyTwoIsEven = refl
--- Checked
+
+-- -- maybe use something more simple like adding 2
+
+-- -- suc suc
+-- even : ℕ → Bool
+-- even zero = true
+-- even (suc zero) = false
+-- even (suc (suc n)) = even n
+
+-- zeroIsEven : even 0 ≡ true
+-- zeroIsEven = refl
+
+-- oneIsNotEven : even 1 ≡ false
+-- oneIsNotEven = refl
+
+-- sevenIsNotEven : even 7 ≡ false
+-- sevenIsNotEven = refl
+
+-- fortyTwoIsEven : even 42 ≡ true
+-- fortyTwoIsEven = refl
+-- -- Checked
 
 -- typeCheckingError : even 1337 ≡ true
 -- typeCheckingError = refl

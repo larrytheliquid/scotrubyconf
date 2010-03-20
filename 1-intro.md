@@ -34,7 +34,7 @@ types at a rubyconf, what gives?
   
     even : ℕ → Bool
     _*_ : ℕ → ℕ → ℕ
-    isWeekend : Day → Bool
+    isGoodDay : Day → Bool
 
 <div style="display: none">
 
@@ -174,7 +174,7 @@ Coverage checking
     isGoodDay Friday = true
     isGoodDay Saturday = true
     isGoodDay Sunday = true
-    isGoodDay _ = false 
+    isGoodDay _ = false
 
 <div style="display: none">
 
@@ -240,7 +240,7 @@ notice that constructors across multiple types can have same names, and can be
 differentiated by the type signature they are in
 
 !SLIDE
-    fromWeekday : Day → EndDay
+    fromWeekday : Day → GoodDay
     fromWeekday Friday = Friday
     fromWeekday Saturday = Saturday
     fromWeekday Sunday = Sunday
@@ -251,6 +251,100 @@ differentiated by the type signature they are in
 of course we may also need to import more general data into our
 specific types...
 lame defaults!!!!!!!!!
+
+this is a problem you face when enforcing coverage in most
+languages... both undesirable obvious solutions are a runtime error
+(which we are trying to avoid), or picking a default, which leads to
+logic errors
+
+... to solve this we will see our first use of dependent types
+
+!SLIDE subsection
+
+Dependent types
+===============
+
+!SLIDE
+    record ⊤ : Set where
+    
+    data ⊥ : Set where
+
+    ↑ : Bool → Set
+    ↑ true  = ⊤
+    ↑ false = ⊥
+
+<div style="display: none">
+
+notice that this is a function just like everything else, it just
+happens to return a Set (type) instead of a value
+
+... there is no special keyword indicating that this is a function on types
+this is introduces a very important notion in dependent types, namely
+that the wall separating the world of types & the world of values has
+been torn down
+
+!SLIDE
+    fromWeekday : (day : Day) → 
+                  {precondition : ↑ (isGoodDay day)} → 
+                  GoodDay
+    fromWeekday Friday = Friday
+    fromWeekday Saturday = Saturday
+    fromWeekday Sunday = Sunday
+    fromWeekday _ = Friday
+
+    compileError : GoodDay
+    compileError = fromWeekday Tuesday
+
+<div style="display: none">
+
+you can see here why these are called "dependent" types, any type can
+be given a label for the value it can represent, which can be reused
+or "depended upon" in later parts of the type signature, from left to right
+
+notice that our function call happens in the type signature
+precondition not used here, just for readability
+
+implicit arguments do not need to be explicitly passed when calling
+the function
+
+here we get a compile time error, not a run time exception!!!
+
+!SLIDE
+     _div_ : ℕ → (n : ℕ) → 
+            {_ : ↑ (nonZero n)} → ℕ
+
+    lookup : {A : Set}(n : ℕ)(xs : List A)
+             {_ : ↑ (n < length xs)} → A
+
+<div style="display: none">
+
+... this is a really big deal, because we can encode arbitrary
+preconditions to restrict our function domain... no more divide by
+zero errors!!!... no more index out of bounds errors!
+
+note that we just leave the label for "precondition" blank to show our
+intent of not using it
+
+!SLIDE
+    fromWeekday : (day : Day) → 
+                {_ : ↑ (isGoodDay day)} → 
+                GoodDay
+    fromWeekday Friday = Friday
+    fromWeekday Saturday = Saturday
+    fromWeekday Sunday = Sunday
+    fromWeekday Monday {()}
+    fromWeekday Tuesday {()}
+    fromWeekday Wednesday {()}
+    fromWeekday Thursday {()}
+
+<div style="display: none">
+
+rather than defining a default answer that can never get used, here we
+pattern match on the fact that ⊥ has no constructors (this () is
+special syntax meaning this type is not inhabited)
+
+the {} can be used to pattern match on implicit arguments instead of
+omitting them like usual
 
 !SLIDE bullets
 # Ruby test assertions
