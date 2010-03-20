@@ -1,11 +1,22 @@
+
+possibly tweak the border between "coverage checking" & "implicit tests"
+
+============================
+
+show an example of an implicit tests via vectors... head solution
+compared to checking for an empty array or first returing a 'nil'
+default that must be checked dynamically again throughout the entire
+program using this result
+
+================================================
+
+
 ... could at this point introduce all problems and then solve each
 one, or introduce/solve as i get to them, or introduce/preview-solve
 and then in depth solve
 
 ... as much as we advocate testing, there are still many unsolved
 problems in the area
-
-if testing really is the answer, we have some problems to solve:
 
 ok... so coverage completeness drastically reduces runtime
 errors... great, many less embarrassing 500 pages
@@ -38,3 +49,38 @@ maybe reference the beautiful membership->any->setoid->equivalence
 start by show _*_ defined with _+_
 
 move towards preconditions & explaining T, top & bottom
+
+
+===========================================
+
+!SLIDE
+# Ruby VS purely functional
+
+    # Ruby
+    Kernel#puts
+    String#reverse!
+
+    -- Agda
+    putStr : String → IO ⊤
+    reverse! : String → Monad String
+
+<div style="display: none">
+
+Ruby unrestricted mutation & metaprogramming... useful to write but
+hard to reason about later
+
+haskell-like purity... side-effects semantically restricted in type
+signature via monads... this is not unique to dependent types,
+e.g. haskell does the same
+
+ruby uses ! convention to mark dangerous operations, and to a lesser
+extent side effects
+
+haskell instead uses language semantics to guarantee where side
+effects can only possibly happen
+
+can get a list of spots where a side-effect bug could have occurred
+back... without this distinction testing/debugging is harder!
+
+imagine how confusing a ? predicate method that mutates could
+be... conventions are not enough

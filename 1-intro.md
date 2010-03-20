@@ -1,4 +1,5 @@
 !SLIDE
+
 Dependent Types
 ===============
 A Look At The Other Side
@@ -42,11 +43,9 @@ errors... arguably too limited to be useful
 need to test logic anyway which catches these problems, so dynamic
 languages like ruby are just as fine of an option
 
-of course, the ability to create custom types & types nested in other
-types makes type signature complexity add up and be a useful
-assurance, but i digress
-
 this presentation is NOT about trivial type guarantees
+... but they will make their appearance at the beginning and with
+certain other constraints can be very valuable on their own
 
 !SLIDE bullets
 # Ruby culture of testing #
@@ -69,7 +68,9 @@ meaningful guarantees
 so... rubyists care about writing correct software
 
 !SLIDE subsection
-# Why #
+
+   Why
+=========
 
 <div style="display: none">
 
@@ -91,7 +92,7 @@ defensive mental reaction... i completely understand where you're
 coming from... i invite you instead to notice this irrational behavior
 & ignore it in favor of an open mind
 
-!SLIDE
+!SLIDE bullets
 # General problems at scale #
 
 * need less runtime crashes
@@ -122,69 +123,134 @@ when you try to test monolithic code, you get a combinatorial
 explosion of test scenarios that becomes impractical to write
 ... then you break software up into encapsulated & loosely coupled
 chunks
+
 ... this works, making something possible to fit all in your head and
 feasible/easy to test, as evident by small single-purpose web services
 (e.g. and/or middleware mounted rack/sinatra apps), specific
 gems/libraries, etc
+
 ... but now you have the problem of testing/ensuring that the whole
 works together correctly & uses each chunk according to its
 (parameter) expectations
+
 ... in fact the combinatoric part of the problem may have grown as the
 libraries are more general than your specific monolithic software
 
-separately, we also have the problem of debugging runtime errors, &
-there existence at all
+separately, we also have the problem of debugging runtime errors,
+which become easier to introduce in large applications
 
 !SLIDE
 # Specific problems at scale #
 
-* [coverage checking] needing to test all possible inputs from a user to ensure a lack of
-runtime errors
-* [lemmas] integration of several encapsulated & loosely coupled services
-TODO: mention "proofs-as-programs"?
-* [universal quantification] relying on trust that a library we are using works
-... duplicating tests that a library may have covered "just to be sure" in AR, etc)
-... or just trust the library
+* [coverage checking] needing to test all possible inputs to ensure a lack of
+  runtime errors
 * [implicit tests] the increasingly large, to the point of being itself
-incomprehensible, test suite of a growing mature project
+  incomprehensible, test suite of a growing mature project
+* [lemmas] testing integration of several encapsulated & loosely coupled services
+* [universal quantification] relying on trust that a library we are using works
+* [monads] knowing where an error could have occurred if you do get
+  runtime errors
 
 <div style="display: none">
 
 there is a solution to all of these with dependent types
 
+trust that a lib works:
+... duplicating tests that a library may have covered "just to be sure" in AR, etc)
+... or just trust the library
+
+!SLIDE subsection
+
+Coverage checking
+=================
+
 !SLIDE
-# Ruby VS purely functional
-
-    # Ruby
-    Kernel#puts
-    String#reverse!
-
-    -- Agda
-    putStr : String → IO ⊤
-    reverse! : String → Monad String
+   data Day : Set where
+      Monday Tuesday Wednesday : Day
+      Thursday Friday : Day
+      Saturday Sunday : Day
+ 
+    isGoodDay : Day → Bool
+    isGoodDay Friday = true
+    isGoodDay Saturday = true
+    isGoodDay Sunday = true
+    isGoodDay _ = false 
 
 <div style="display: none">
 
-Ruby unrestricted mutation & metaprogramming... useful to write but
-hard to reason about later
+in ruby this wouldn't work because you would need to treat each
+argument as any kind of object with any variation of defined methods
 
-haskell-like purity... side-effects semantically restricted in type
-signature via monads... this is not unique to dependent types,
-e.g. haskell does the same
+with specific datatypes + coverage checking you can are guaranteed
+to never get a runtime error for the application of any arguments
+related to being in the function's domain
+... a world without "called X on nil class" errors!!
 
-ruby uses ! convention to mark dangerous operations, and to a lesser
-extent side effects
+you may think that this may cause a lot of work for certain
+types... like imagine needing to define addition of every single number!
 
-haskell instead uses language semantics to guarantee where side
-effects can only possibly happen
+!SLIDE
+    _+_ : ℕ → ℕ → ℕ
+    zero + n = n
+    suc m + n = suc (m + n)
 
-can get a list of spots where a side-effect bug could have occurred
-back... without this distinction testing/debugging is harder!
+    _*_ : ℕ → ℕ → ℕ
+    zero * n = zero
+    suc m * n = n + (m * n)
 
-imagine how confusing a ? predicate method that mutates could
-be... conventions are not enough
+<div style="display: none">
 
-TODO: May want to mention simple non-dependent curry-howard here?
+an emphasis on inductive
+("recursive") definitions is placed that limit what you must write
+out to the base & recursive cases
+
+!SLIDE subsection
+
+Implicit tests
+==============
+
+!SLIDE
+    data GoodDay : Set where
+      Friday Saturday Sunday : GoodDay
+ 
+    isBestDay : GoodDay → Bool
+    isBestDay Saturday = true
+    isBestDay _ = true
+
+    toWeekday : GoodDay → Day
+    toWeekday Friday = Friday
+    toWeekday Saturday = Saturday
+    toWeekday Sunday = Sunday
+
+<div style="display: none">
+
+when writing the isBestDay function you only really want it to be
+defined on any possible contenders for the title... GoodDays
+
+you can also make new types with less constructors that are more
+specific to the particular problem being solved... functions on those
+are verified to be coverage complete
+... then you can use a conversion function to a values in a "bigger"
+type to interface with another library that uses the bigger type
+
+notice that this specialized type is essentially an implicit test for
+all functions using it... all those functions will only work for GoodDays
+
+notice that constructors across multiple types can have same names, and can be
+differentiated by the type signature they are in
+
+!SLIDE
+    fromWeekday : Day → EndDay
+    fromWeekday Friday = Friday
+    fromWeekday Saturday = Saturday
+    fromWeekday Sunday = Sunday
+    fromWeekday _ = Friday
+
+<div style="display: none">
+
+of course we may also need to import more general data into our
+specific types...
+lame defaults!!!!!!!!!
 
 !SLIDE bullets
 # Ruby test assertions
@@ -256,24 +322,6 @@ TODO: May want to mention simple non-dependent curry-howard here?
 
 !SLIDE subsection
 # Language basics
-
-!SLIDE
-# Coverage checking
-TODO
-
-<div style="display: none">
-
-in ruby this wouldn't work because you would need to treat each
-argument as any kind of object with any variation of defined methods
-
-think about a function that would need to have a case for every single
-number... seems impractical
-
-may seem limiting, but not when an emphasis on inductive
-("recursive") definitions is placed that limit what you must write
-out to the base & recursive cases
-
-TODO: string example = defaults?
 
 !SLIDE
 # Termination checking
