@@ -1,4 +1,14 @@
 
+monads for isolation of side effecting code from pure code is really
+another form of implicit testing
+
+==========================
+
+maybe make specific headers for basic type implicit tests, implicit
+function tests, and advanced type implicit tests... also coverage relates
+
+=======================
+
 possibly tweak the border between "coverage checking" & "implicit tests"
 
 ============================

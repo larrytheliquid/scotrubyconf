@@ -142,14 +142,11 @@ which become easier to introduce in large applications
 !SLIDE smbullets
 # Specific problems at scale #
 
-* [coverage checking] needing to test all possible inputs to ensure a lack of
-  runtime errors
-* [implicit tests] the increasingly large, to the point of being itself
-  incomprehensible, test suite of a growing mature project
-* [lemmas] testing integration of several encapsulated & loosely coupled services
-* [universal quantification] relying on trust that a library we are using works
-* [monads] knowing where an error could have occurred if you do get
-  runtime errors
+* testing all possible inputs to prevent runtime errors
+* testing & comprehending a large growing suite
+* testing integration of encapsulated & loosely coupled services
+* relying on trust that a library works for our use case
+* knowing where runtime errors could have occurred
 
 <div style="display: none">
 
@@ -158,6 +155,15 @@ there is a solution to all of these with dependent types
 trust that a lib works:
 ... duplicating tests that a library may have covered "just to be sure" in AR, etc)
 ... or just trust the library
+
+!SLIDE bullets
+# Specific solutions at scale #
+
+* coverage checking
+* implicit tests
+* lemmas
+* universal quantification
+* monads
 
 !SLIDE subsection
 
@@ -352,6 +358,126 @@ special syntax meaning this type is not inhabited)
 the {} can be used to pattern match on implicit arguments instead of
 omitting them like usual
 
+!SLIDE subsection
+
+More implicit tests
+=======================
+
+<div style="display: none">
+
+take a moment to realize that i said this presentation is on testing
+but haven't shown an explicit tests yet (assertions, unit tests, etc)
+
+a lot of value can be gained in an application by implicit assurances
+through coverage checking and well-crafted and/or used specific types
+
+we are used to this concept in the form of creating and using
+abstractions (at low level code layer, or high level library/framework
+layer)
+... using types for these "abstractions" gives you the same benefits
+but with real compile-time assurance
+
+so far we've seen implicit tests via basic custom types, and implicit
+tests via preconditions in function signatures... now we'll move on to
+implicit tests via advanced custom types
+
+!SLIDE
+    data List (A : Set) : Set where
+      []  : List A
+      _∷_ : (x : A) (xs : List A) → List A
+
+    bool-list : List Bool
+    bool-list = false ∷ true ∷ false ∷ []
+
+<div style="display: none">
+
+simple polymorphic cons-based or "linked" list
+
+!SLIDE
+    data Vec (A : Set) : ℕ → Set where
+      []  : Vec A zero
+      _∷_ : {n : ℕ} (x : A) (xs : Vec A n) →
+            Vec A (suc n)
+
+    bool-vec : Vec Bool 3
+    bool-vec = false ∷ true ∷ false ∷ []
+
+<div style="display: none">
+
+this is called an "indexed" type
+the length of the vector/list is carried along in the type
+
+note how the type signature changed to include the length 3
+restriction, but the value stayed the same... we can get this extra
+"implicit" test of the length 3 restriction "for free"!
+
+!SLIDE
+    _++_ : {A : Set} {n m : ℕ} → 
+           Vec A n → Vec A m → 
+           Vec A (n + m)
+    [] ++ ys = ys
+    x ∷ xs ++ ys = x ∷ (xs ++ ys)
+
+<div style="display: none">
+
+here we can see just by the type signature that the resulting vector
+is length of the arguments added together... the type is giving us
+extra information
+
+again notice the "dependencies" in the type
+
+this kind of encoding of data into types can let us make functions
+like this whose type signature gives us additional safety
+characteristics that you would not get in typical static typing
+
+also note that the addition occurring in the type signature can be any
+arbitrary function!
+
+!SLIDE
+    head : {A : Set} →
+           List A → Maybe A
+    head [] = nothing
+    head (x ∷ _) = just x
+
+    tail : {A : Set} → 
+           List A → List A
+    tail [] = []
+    tail (_ ∷ xs) = xs
+
+<div style="display: none">
+
+really we want the head and tail of an empty list to be undefined, but
+we also don't want runtime errors
+
+the first example shows how we might handle the result in ruby with
+nil, but then this leaks out into other functions that now have to
+deal with a nil case everywhere that we really don't want ever to
+happen
+
+the second example uses a default value, which can lead to logic errors
+
+!SLIDE
+    head : {A : Set} {n : ℕ} →
+           Vec A (1 + n) → A
+    head (x ∷ _) = x
+
+    tail : {A : Set} {n : ℕ} → 
+           Vec A (1 + n) → Vec A n
+    tail (_ ∷ xs) = xs
+
+<div style="display: none">
+
+here we use vectors to realize our intended domain restriction
+
+no matter what the implicit n is, we add 1 so the argument can never
+be of length zero (empty vector)
+
+our tail type also gives more information, that the returned vector
+will be of length exactly one less than the argument
+
+note that we could have also used implicit isEmpty preconditions in
+the list versions... good to have choices
+
 !SLIDE bullets
 # Ruby test assertions
 
@@ -419,13 +545,6 @@ omitting them like usual
 // will come back to this later, but only 2 lines of code for
 // statically checked assertions!
 // Also unifies both values
-
-!SLIDE subsection
-# Language basics
-
-!SLIDE
-# Termination checking
-TODO
 
 !SLIDE
 # Magic inverse
