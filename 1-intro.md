@@ -859,3 +859,31 @@ check!!! (refactoring)
 
 !SLIDE
 # Fin #
+
+!SLIDE
+    data GoodDay : Day → Set where
+      Friday : GoodDay Friday
+      Saturday : GoodDay Saturday
+      Sunday : GoodDay Sunday
+
+    toDay : {day : Day} → GoodDay day → Day
+    toDay {day} _ = day
+
+<div style="display: none">
+
+an alternative representation of GoodDay that directly expresses the
+relationship between the two types
+
+we get toDay "for free" & don't really need it
+
+!SLIDE
+    goodDaysAreGood : {day : Day} → 
+      GoodDay day → isGoodDay day ≡ true
+    goodDaysAreGood Friday = refl
+    goodDaysAreGood Saturday = refl
+    goodDaysAreGood Sunday = refl
+
+    goodDaysAreNotWeekdays : {day : Day} → 
+      GoodDay day → WeekDay day ≡ false
+    goodDaysAreNotWeekdays good 
+      rewrite goodDaysAreGood good = refl
