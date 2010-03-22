@@ -72,10 +72,30 @@ goodDaysAreNotWeekdays : (good : GoodDay) →
                          isWeekDay (toDay good) ≡ false
 goodDaysAreNotWeekdays good rewrite goodDaysAreGood good = refl
 
+-- fromDay : (day : Day) → {_ : T (isGoodDay day)} → GoodDay
+-- fromDay Friday = Friday
+-- fromDay Saturday = Saturday
+-- fromDay Sunday = Sunday
+-- fromDay Monday {()}
+-- fromDay Tuesday {()}
+-- fromDay Wednesday {()}
+-- fromDay Thursday {()}
+
+data Image_∋_ {A B : Set}(f : A → B) : 
+  B → Set where
+  im : {x : A} → Image f ∋ f x
+
+inv : {A B : Set}(f : A → B)(y : B) → Image f ∋ y → A
+inv f .(f x) (im {x}) = x
+
+                 -- Day           GoodDay
+testInv : inv toDay Saturday im ≡ Saturday
+testInv = refl
+
 fromDay : (day : Day) → {_ : T (isGoodDay day)} → GoodDay
-fromDay Friday = Friday
-fromDay Saturday = Saturday
-fromDay Sunday = Sunday
+fromDay Friday = inv toDay Friday im
+fromDay Saturday = inv toDay Saturday im
+fromDay Sunday = inv toDay Sunday im
 fromDay Monday {()}
 fromDay Tuesday {()}
 fromDay Wednesday {()}
@@ -109,6 +129,8 @@ aDayBestDayExists : ∃₂ λ day p → FromDay day p (λ good → isBestDay goo
                               -- isBestDay (fromDay day) ≡ true
 aDayBestDayExists = Saturday , refl , refl
 
+-- hmmm : (good : GoodDay) → inv toDay good im ≡ 
+-- hmmm = ?
 
 -- -- maybe use something more simple like adding 2
 

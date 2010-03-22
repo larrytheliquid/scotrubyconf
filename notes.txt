@@ -1,3 +1,8 @@
+
+still may be nice to show GoodDay indexed by Day with implications
+
+====================
+
 may want to have specific example slides of lemmas with framework, and
 unit tests in integration tests
 
@@ -68,7 +73,3 @@ assumed ones by an object, a function, etc
 
 maybe reference the beautiful membership->any->setoid->equivalence
 ... in other words the ability to encode math as you'd define it in a textbook
-
-===========================================
-
-prove inverse function

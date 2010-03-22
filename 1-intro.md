@@ -820,16 +820,9 @@ another form of implicit testing
     inv : {A B : Set}(f : A → B)(y : B) → Image f ∋ y → A
     inv f .(f x) (im {x}) = x
 
-!SLIDE
-    Bool-to-ℕ : Bool → ℕ
-    Bool-to-ℕ false = 0
-    Bool-to-ℕ true  = 1
-
-    inv-0 : inv Bool-to-ℕ 0 im ≡ false
-    inv-0 = refl
-
-    inv-1 : inv Bool-to-ℕ 1 im ≡ true
-    inv-1 = refl
+                     -- Day           GoodDay
+    testInv : inv toDay Saturday im ≡ Saturday
+    testInv = refl
 
 <div style="display: none">
 
@@ -838,3 +831,21 @@ example advantage of purity
 via the type system!!!
 ... purity & dependent types let you go back in time! =p
 
+!SLIDE
+    fromDay : (day : Day) → {_ : T (isGoodDay day)} → GoodDay
+    fromDay Friday = inv toDay Friday im
+    fromDay Saturday = inv toDay Saturday im
+    fromDay Sunday = inv toDay Sunday im
+    fromDay Monday {()}
+    fromDay Tuesday {()}
+    fromDay Wednesday {()}
+    fromDay Thursday {()}
+
+<div style="display: none">
+
+grand finale... we can now go back and redefine fromDay
+... except this time we guarantee our inverse property by definition
+... no chance of screwing up, and will adapt to future code changes properly!!!
+
+... and all our previous proofs (including our "inverses" still
+check!!! (refactoring)
