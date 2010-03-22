@@ -572,9 +572,9 @@ supply a proof of top (inhabited) or bottom (not inhabited)
 !SLIDE
 # Propositional equality #
 
-    data _≡_ {A : Set} (x : A) : A → Set where
-      refl : x ≡ x
-      bogus : {y : A} → x ≡ y
+     data _≡_ {A : Set} (x : A) : A → Set where
+       refl : x ≡ x
+    -- bogus : {y : A} → x ≡ y
 
 <div style="display: none">
 
