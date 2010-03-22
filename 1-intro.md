@@ -144,7 +144,7 @@ which become easier to introduce in large applications
 
 * testing all possible inputs to prevent runtime errors
 * testing & comprehending a large growing suite
-* testing integration of encapsulated & loosely coupled services
+* testing integration of highly cohesive & loosely coupled services
 * relying on trust that a library works for our use case
 * knowing where runtime errors could have occurred
 
@@ -643,13 +643,13 @@ testing
 have experienced with using testing frameworks & tests to
 prototype/design behavior/etc
 
-!SLIDE
+!SLIDE bullets
 # Intuistionistic logic #
 
-*Classical logic:* every statement must inherently be true or false
+* *Classical logic:* every statement must inherently be true or false
 
-*Intuistionistic logic:* a statement is only "true" if you have a
- proof for it
+* *Intuistionistic logic:* a statement is only "true" if you have a
+  proof for it
 
 <div style="display: none">
 
@@ -679,8 +679,9 @@ all GoodDays
 
 !SLIDE
     goodDaysAreNotWeekdays : (good : GoodDay) →
-                             isWeekDay (toDay good) ≡ false
-    goodDaysAreNotWeekdays good rewrite goodDaysAreGood good = refl
+      isWeekDay (toDay good) ≡ false
+    goodDaysAreNotWeekdays good rewrite 
+      goodDaysAreGood good = refl
 
 <div style="display: none">
 
@@ -720,7 +721,8 @@ somehow confirmed to work together
     ∃ : ∀ {A : Set} → (A → Set) → Set
     ∃ = Σ _
 
-    aGoodBestDayExists : ∃ λ good → isBestDay good ≡ true
+    aGoodBestDayExists : ∃ λ good → 
+      isBestDay good ≡ true
     aGoodBestDayExists = Saturday , refl
 
 <div style="display: none">
@@ -736,7 +738,8 @@ proof that they are related
 !SLIDE
     inverses : (day : Day) →
                (p : isGoodDay day ≡ true) →
-               FromDay day p (λ good → toDay good ≡ day)
+               FromDay day p 
+                 (λ good → toDay good ≡ day)
             -- toDay (fromDay day) ≡ day
     inverses Friday   _ = refl
     inverses Saturday _ = refl
@@ -768,8 +771,10 @@ realize that this inverse property holds over every good day
          (C : (x : A) → B x → Set) → Set
     ∃₂ C = ∃ λ a → ∃ λ b → C a b
 
-    aDayBestDayExists : ∃₂ λ day p → FromDay day p (λ good → isBestDay good ≡ true)
-                                  -- isBestDay (fromDay day) ≡ true
+    aDayBestDayExists : ∃₂ λ day p → 
+      FromDay day p
+        (λ good → isBestDay good ≡ true)
+     -- isBestDay (fromDay day) ≡ true
     aDayBestDayExists = Saturday , refl , refl
 
 !SLIDE subsection
@@ -817,7 +822,8 @@ another form of implicit testing
       B → Set where
       im : {x : A} → Image f ∋ f x
 
-    inv : {A B : Set}(f : A → B)(y : B) → Image f ∋ y → A
+    inv : {A B : Set}(f : A → B)(y : B) → 
+          Image f ∋ y → A
     inv f .(f x) (im {x}) = x
 
                      -- Day           GoodDay
@@ -832,7 +838,8 @@ via the type system!!!
 ... purity & dependent types let you go back in time! =p
 
 !SLIDE
-    fromDay : (day : Day) → {_ : T (isGoodDay day)} → GoodDay
+    fromDay : (day : Day) → {_ : T (isGoodDay day)} → 
+              GoodDay
     fromDay Friday = inv toDay Friday im
     fromDay Saturday = inv toDay Saturday im
     fromDay Sunday = inv toDay Sunday im
@@ -849,3 +856,6 @@ grand finale... we can now go back and redefine fromDay
 
 ... and all our previous proofs (including our "inverses" still
 check!!! (refactoring)
+
+!SLIDE
+# Fin #
