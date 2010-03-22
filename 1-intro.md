@@ -574,6 +574,7 @@ supply a proof of top (inhabited) or bottom (not inhabited)
 
     data _≡_ {A : Set} (x : A) : A → Set where
       refl : x ≡ x
+      bogus : {y : A} → x ≡ y
 
 <div style="display: none">
 
@@ -722,6 +723,16 @@ somehow confirmed to work together
     aGoodBestDayExists : ∃ λ good → isBestDay good ≡ true
     aGoodBestDayExists = Saturday , refl
 
+<div style="display: none">
+
+the really important thing to note here is that we no longer merely
+return a day satisfying some constraint, or a proof of that
+constraint, but both together
+
+doing this makes future proofs that use this lemma shorter as they
+don't have to get both of these pieces of information separately and
+proof that they are related
+
 !SLIDE
     inverses : (day : Day) →
                (p : isGoodDay day ≡ true) →
@@ -740,7 +751,10 @@ somehow confirmed to work together
 realize that this inverse property holds over every good day
 
 !SLIDE
-    FromDay : (day : Day) → isGoodDay day ≡ true → (GoodDay → Set) → Set
+    FromDay : (day : Day) → 
+              isGoodDay day ≡ true → 
+              (GoodDay → Set) → 
+              Set
     FromDay Friday   _ f = f (fromDay Friday)
     FromDay Saturday _ f = f (fromDay Saturday)
     FromDay Sunday   _ f = f (fromDay Sunday)
