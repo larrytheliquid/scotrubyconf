@@ -22,10 +22,6 @@ you substitute your specific reuse case thanks to unification
 check opportunity to add or remove titles from slides (especially ones
 with code)
 
-=============================
-
-should do a proof by contradiction
-
 ==========================
 may want to just split the entire presentation in terms of implicit &
 explicit proofs
@@ -38,9 +34,6 @@ make sure lemmas section answers the problem originally presented
 when mentioning curry-howard, can point back at the construction of a
 sortedlist having the (implicit) proof embedded in it
 
-=================
-may want to show how any/dtpa proof-carrying-code can be used
-
 ==============================
 
 maybe make specific headers for basic type implicit tests, implicit
@@ -51,13 +44,6 @@ function tests, and advanced type implicit tests... also coverage relates
 possibly tweak the border between "coverage checking" & "implicit tests"
 
 ============================
-
-show an example of an implicit tests via vectors... head solution
-compared to checking for an empty array or first returing a 'nil'
-default that must be checked dynamically again throughout the entire
-program using this result
-
-================================================
 
 what is considered an integration test is relative
 

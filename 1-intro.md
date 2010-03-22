@@ -785,8 +785,8 @@ Purity + monads
     String#reverse!
 
     -- Agda
-    putStr : String → IO ⊤
-    reverse! : Monad String → Monad String
+    putStrLn : String → IO ⊤
+    unsafeReverse : IORef String → IO (IORef String)
 
 <div style="display: none">
 
