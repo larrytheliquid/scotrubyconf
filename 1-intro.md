@@ -163,7 +163,7 @@ trust that a lib works:
 * implicit tests
 * lemmas
 * universal quantification
-* monads
+* purity + monads
 
 !SLIDE subsection
 
@@ -771,4 +771,70 @@ realize that this inverse property holds over every good day
     aDayBestDayExists : ∃₂ λ day p → FromDay day p (λ good → isBestDay good ≡ true)
                                   -- isBestDay (fromDay day) ≡ true
     aDayBestDayExists = Saturday , refl , refl
+
+!SLIDE subsection
+
+Purity + monads
+===============
+
+!SLIDE
+# Ruby VS purely functional
+
+    # Ruby
+    Kernel#puts
+    String#reverse!
+
+    -- Agda
+    putStr : String → IO ⊤
+    reverse! : Monad String → Monad String
+
+<div style="display: none">
+
+Ruby unrestricted mutation & metaprogramming... useful to write but
+hard to reason about later
+
+haskell-like purity... side-effects semantically restricted in type
+signature via monads... this is not unique to dependent types,
+e.g. haskell does the same
+
+ruby uses ! convention to mark dangerous operations, and to a lesser
+extent side effects
+
+haskell instead uses language semantics to guarantee where side
+effects can only possibly happen
+
+can get a list of spots where a side-effect bug could have occurred
+back... without this distinction testing/debugging is harder!
+
+imagine how confusing a ? predicate method that mutates could
+be... conventions are not enough
+
+monads for isolation of side effecting code from pure code is really
+another form of implicit testing
+
+!SLIDE
+    data Image_∋_ {A B : Set}(f : A → B) : 
+      B → Set where
+      im : {x : A} → Image f ∋ f x
+
+    inv : {A B : Set}(f : A → B)(y : B) → Image f ∋ y → A
+    inv f .(f x) (im {x}) = x
+
+!SLIDE
+    Bool-to-ℕ : Bool → ℕ
+    Bool-to-ℕ false = 0
+    Bool-to-ℕ true  = 1
+
+    inv-0 : inv Bool-to-ℕ 0 im ≡ false
+    inv-0 = refl
+
+    inv-1 : inv Bool-to-ℕ 1 im ≡ true
+    inv-1 = refl
+
+<div style="display: none">
+
+example advantage of purity
+... generic inverse not by logging data & replaying or anything, just
+via the type system!!!
+... purity & dependent types let you go back in time! =p
 

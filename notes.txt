@@ -71,41 +71,4 @@ maybe reference the beautiful membership->any->setoid->equivalence
 
 ===========================================
 
-monads for isolation of side effecting code from pure code is really
-another form of implicit testing
-
 prove inverse function
-
-==========================
-
-!SLIDE
-# Ruby VS purely functional
-
-    # Ruby
-    Kernel#puts
-    String#reverse!
-
-    -- Agda
-    putStr : String → IO ⊤
-    reverse! : String → Monad String
-
-<div style="display: none">
-
-Ruby unrestricted mutation & metaprogramming... useful to write but
-hard to reason about later
-
-haskell-like purity... side-effects semantically restricted in type
-signature via monads... this is not unique to dependent types,
-e.g. haskell does the same
-
-ruby uses ! convention to mark dangerous operations, and to a lesser
-extent side effects
-
-haskell instead uses language semantics to guarantee where side
-effects can only possibly happen
-
-can get a list of spots where a side-effect bug could have occurred
-back... without this distinction testing/debugging is harder!
-
-imagine how confusing a ? predicate method that mutates could
-be... conventions are not enough
