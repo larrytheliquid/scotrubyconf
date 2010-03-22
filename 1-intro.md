@@ -177,10 +177,10 @@ Coverage checking
       Saturday Sunday : Day
  
     isGoodDay : Day → Bool
-    isGoodDay Friday = true
+    isGoodDay Friday   = true
     isGoodDay Saturday = true
-    isGoodDay Sunday = true
-    isGoodDay _ = false
+    isGoodDay Sunday   = true
+    isGoodDay _        = false
 
     isWeekDay : Day → Bool
     isWeekDay day = not (isGoodDay day)
@@ -200,11 +200,11 @@ types... like imagine needing to define addition of every single number!
 
 !SLIDE
     _+_ : ℕ → ℕ → ℕ
-    zero + n = n
+    zero + n  = n
     suc m + n = suc (m + n)
 
     _*_ : ℕ → ℕ → ℕ
-    zero * n = zero
+    zero * n  = zero
     suc m * n = n + (m * n)
 
 <div style="display: none">
@@ -224,12 +224,12 @@ Implicit tests
  
     isBestDay : GoodDay → Bool
     isBestDay Saturday = true
-    isBestDay _ = false
+    isBestDay _        = false
 
     toDay : GoodDay → Day
-    toDay Friday = Friday
+    toDay Friday   = Friday
     toDay Saturday = Saturday
-    toDay Sunday = Sunday
+    toDay Sunday   = Sunday
 
 <div style="display: none">
 
@@ -250,10 +250,10 @@ differentiated by the type signature they are in
 
 !SLIDE
     fromDay : Day → GoodDay
-    fromDay Friday = Friday
+    fromDay Friday   = Friday
     fromDay Saturday = Saturday
-    fromDay Sunday = Sunday
-    fromDay _ = Friday
+    fromDay Sunday   = Sunday
+    fromDay _        = Friday
 
 <div style="display: none">
 
@@ -296,10 +296,10 @@ been torn down
     fromDay : (day : Day) → 
               {precondition : ↑ (isGoodDay day)} → 
               GoodDay
-    fromDay Friday = Friday
+    fromDay Friday   = Friday
     fromDay Saturday = Saturday
-    fromDay Sunday = Sunday
-    fromDay _ = Friday
+    fromDay Sunday   = Sunday
+    fromDay _        = Friday
 
     compileError : GoodDay
     compileError = fromDay Tuesday
@@ -317,6 +317,27 @@ implicit arguments do not need to be explicitly passed when calling
 the function
 
 here we get a compile time error, not a run time exception!!!
+
+!SLIDE
+    fromDay : (day : Day) → 
+              {_ : ↑ (isGoodDay day)} → 
+              GoodDay
+    fromDay Friday   = Friday
+    fromDay Saturday = Saturday
+    fromDay Sunday   = Sunday
+    fromDay Monday    {()}
+    fromDay Tuesday   {()}
+    fromDay Wednesday {()}
+    fromDay Thursday  {()}
+
+<div style="display: none">
+
+rather than defining a default answer that can never get used, here we
+pattern match on the fact that ⊥ has no constructors (this () is
+special syntax meaning this type is not inhabited)
+
+the {} can be used to pattern match on implicit arguments instead of
+omitting them like usual
 
 !SLIDE
      _div_ : ℕ → (n : ℕ) → 
@@ -339,27 +360,6 @@ intent of not using it
 
 and finally note that we could also avoid creating a separate GoodDay
 type and use preconditions instead if we wanted to
-
-!SLIDE
-    fromDay : (day : Day) → 
-              {_ : ↑ (isGoodDay day)} → 
-              GoodDay
-    fromDay Friday = Friday
-    fromDay Saturday = Saturday
-    fromDay Sunday = Sunday
-    fromDay Monday {()}
-    fromDay Tuesday {()}
-    fromDay Wednesday {()}
-    fromDay Thursday {()}
-
-<div style="display: none">
-
-rather than defining a default answer that can never get used, here we
-pattern match on the fact that ⊥ has no constructors (this () is
-special syntax meaning this type is not inhabited)
-
-the {} can be used to pattern match on implicit arguments instead of
-omitting them like usual
 
 !SLIDE subsection
 
@@ -502,9 +502,9 @@ researching the cause of a bug!!!
     sortedList-ℕ : SortedList-ℕ 8
     sortedList-ℕ = 8 ∷ 7 ∷ 2 ∷ []
     
-    insert : {n : ℕ}(x : ℕ)
-             → SortedList-ℕ n
-             → SortedList-ℕ (x ⊔ n)
+    insert : {n : ℕ}(x : ℕ) →
+             SortedList-ℕ n →
+             SortedList-ℕ (x ⊔ n)
 
 <div style="display: none">
 
@@ -664,9 +664,9 @@ Universal quantification
 !SLIDE
     goodDaysAreGood : (good : GoodDay) →
                       isGoodDay (toDay good) ≡ true
-    goodDaysAreGood Friday = refl
+    goodDaysAreGood Friday   = refl
     goodDaysAreGood Saturday = refl
-    goodDaysAreGood Sunday = refl
+    goodDaysAreGood Sunday   = refl
 
 <div style="display: none">
 
@@ -697,32 +697,64 @@ lemmas that you instantiate with values from your specific problem domain
 work of the library/framework authors... true composition &
 modularity, which we talk about all the time in production code, can
 finally be had in the world of tests!!!!!! *super big deal*
-
-!SLIDE
-# Existential quantification
-TODO
-
-!SLIDE
-# Compositional tests/proofs/lemmas
-
-<div style="display: none">
+... can have a "public api" of lemmas
+think about how much time is wasted by starting from scratch with
+each project... a framework can come with universally quantified
+lemmas that you instantiate with your particular application
 
 unit tests can be reused literally in integration tests
 ... no more leaving it up to hope that the results of one confirm
 results in the other
-
-what is a unit test and what is an integration test is relative... can
-be at all levels between app code, library code, framework code,
-between web services, etc!
+what is a unit test and what is an integration test is relative
+... you can use your "integration tests" in one service as lemmas to
+prove statements between several interacting services
 ... cures the problem of the explosion of tiny services that must be
 somehow confirmed to work together
 
 !SLIDE
-# Libraries: code + proofs!
+# Existential quantification
+    data Σ (A : Set) (B : A → Set) : Set where
+      _,_ : (x : A) (y : B x) → Σ A B
+
+    ∃ : ∀ {A : Set} → (A → Set) → Set
+    ∃ = Σ _
+
+    aGoodBestDayExists : ∃ λ good → isBestDay good ≡ true
+    aGoodBestDayExists = Saturday , refl
+
+!SLIDE
+    inverses : (day : Day) →
+               (p : isGoodDay day ≡ true) →
+               FromDay day p (λ good → toDay good ≡ day)
+            -- toDay (fromDay day) ≡ day
+    inverses Friday   _ = refl
+    inverses Saturday _ = refl
+    inverses Sunday   _ = refl
+    inverses Monday    ()
+    inverses Tuesday   ()
+    inverses Wednesday ()
+    inverses Thursday  ()
 
 <div style="display: none">
 
-think about how much time is wasted by starting from scratch with
-each project... a framework can come with universally quantified
-lemmas that you instantiate with your particular application
+realize that this inverse property holds over every good day
+
+!SLIDE
+    FromDay : (day : Day) → isGoodDay day ≡ true → (GoodDay → Set) → Set
+    FromDay Friday   _ f = f (fromDay Friday)
+    FromDay Saturday _ f = f (fromDay Saturday)
+    FromDay Sunday   _ f = f (fromDay Sunday)
+    FromDay Monday    () _
+    FromDay Tuesday   () _
+    FromDay Wednesday () _ 
+    FromDay Thursday  () _
+
+!SLIDE
+    ∃₂ : {A : Set} {B : A → Set}
+         (C : (x : A) → B x → Set) → Set
+    ∃₂ C = ∃ λ a → ∃ λ b → C a b
+
+    aDayBestDayExists : ∃₂ λ day p → FromDay day p (λ good → isBestDay good ≡ true)
+                                  -- isBestDay (fromDay day) ≡ true
+    aDayBestDayExists = Saturday , refl , refl
 

@@ -1,6 +1,7 @@
 module Tester where
 open import Data.Nat hiding (_≤_)
 open import Data.Bool
+open import Data.Product
 open import Relation.Binary.PropositionalEquality
 open import Data.Unit hiding (_≤_)
 open import Data.Empty
@@ -52,6 +53,10 @@ isWeekDay day = not (isGoodDay day)
 data GoodDay : Set where
   Friday Saturday Sunday : GoodDay
 
+isBestDay : GoodDay → Bool
+isBestDay Saturday = true
+isBestDay _ = false
+
 toDay : GoodDay → Day
 toDay Friday = Friday
 toDay Saturday = Saturday
@@ -67,14 +72,42 @@ goodDaysAreNotWeekdays : (good : GoodDay) →
                          isWeekDay (toDay good) ≡ false
 goodDaysAreNotWeekdays good rewrite goodDaysAreGood good = refl
 
--- fromDay : (day : Day) → {_ : T (isGoodDay day)} → GoodDay
--- fromDay Friday = Friday
--- fromDay Saturday = Saturday
--- fromDay Sunday = Sunday
--- fromDay Monday {()}
--- fromDay Tuesday {()}
--- fromDay Wednesday {()}
--- fromDay Thursday {()}
+fromDay : (day : Day) → {_ : T (isGoodDay day)} → GoodDay
+fromDay Friday = Friday
+fromDay Saturday = Saturday
+fromDay Sunday = Sunday
+fromDay Monday {()}
+fromDay Tuesday {()}
+fromDay Wednesday {()}
+fromDay Thursday {()}
+
+FromDay : (day : Day) → isGoodDay day ≡ true → (GoodDay → Set) → Set
+FromDay Friday _ f = f (fromDay Friday)
+FromDay Saturday _ f = f (fromDay Saturday)
+FromDay Sunday _ f = f (fromDay Sunday)
+FromDay Monday () _
+FromDay Tuesday () _
+FromDay Wednesday () _ 
+FromDay Thursday () _
+
+inverses : (day : Day) →
+           (p : isGoodDay day ≡ true) →
+           FromDay day p (λ good → toDay good ≡ day)
+        -- toDay (fromDay day) ≡ day
+inverses Friday _ = refl
+inverses Saturday _ = refl
+inverses Sunday _ = refl
+inverses Monday ()
+inverses Tuesday ()
+inverses Wednesday ()
+inverses Thursday ()
+
+aGoodBestDayExists : ∃ λ good → isBestDay good ≡ true
+aGoodBestDayExists = Saturday , refl
+
+aDayBestDayExists : ∃₂ λ day p → FromDay day p (λ good → isBestDay good ≡ true)
+                              -- isBestDay (fromDay day) ≡ true
+aDayBestDayExists = Saturday , refl , refl
 
 
 -- -- maybe use something more simple like adding 2

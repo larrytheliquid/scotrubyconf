@@ -1,7 +1,5 @@
-voila, a proof that good days are not weekdays!!
-
-=============
-prove inverse function
+may want to have specific example slides of lemmas with framework, and
+unit tests in integration tests
 
 ===========================
 
@@ -13,9 +11,6 @@ parameters
 difference between reusing cucumber steps and a uni quant
 function... semantics guaranteeing the forall is true, thus letting
 you substitute your specific reuse case thanks to unification
-
-======================
-TODO: Magic inverse
 
 =========
 
@@ -78,6 +73,8 @@ maybe reference the beautiful membership->any->setoid->equivalence
 
 monads for isolation of side effecting code from pure code is really
 another form of implicit testing
+
+prove inverse function
 
 ==========================
 
