@@ -103,13 +103,13 @@ coming from... i invite you instead to notice this irrational behavior
 
 developing understandable & trustworthy large applications right now sucks
 
-need to not stay up at night worrying if some remote part of the big
-system we just modified was affected by a big change we just made
-
 need to not reach a maintenance dead end on large projects!
 (typical story of productive feature releases early that comes to a
 grinding maintenance halt later where a new feature introduction
 requires a lot of time assuring that nothing else was affected
+
+need to not stay up at night worrying if some remote part of the big
+system we just modified was affected by a big change we just made
 
 solution, as we've found, lies in testing... but there are still many
 open problems that need to be solved
@@ -121,7 +121,7 @@ open problems that need to be solved
 
 when you try to test monolithic code, you get a combinatorial
 explosion of test scenarios that becomes impractical to write
-... then you break software up into encapsulated & loosely coupled
+... then you break software up into highly cohesive & loosely coupled
 chunks
 
 ... this works, making something possible to fit all in your head and
@@ -199,6 +199,10 @@ you may think that this may cause a lot of work for certain
 types... like imagine needing to define addition of every single number!
 
 !SLIDE
+    data ℕ : Set where
+      zero : ℕ
+      suc : ℕ → ℕ
+
     _+_ : ℕ → ℕ → ℕ
     zero + n  = n
     suc m + n = suc (m + n)
@@ -791,7 +795,8 @@ Purity + monads
 
     -- Agda
     putStrLn : String → IO ⊤
-    unsafeReverse : IORef String → IO (IORef String)
+    unsafeReverse : IORef String → 
+                    IO (IORef String)
 
 <div style="display: none">
 
