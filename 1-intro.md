@@ -109,7 +109,7 @@ system we just modified was affected by a big change we just made
 need to not reach a maintenance dead end on large projects!
 (typical story of productive feature releases early that comes to a
 grinding maintenance halt later where a new feature introduction
-requires a lot of time assuring that nothing else was affected
+requires a lot of time assuring that nothing else was affected)
 
 solution, as we've found, lies in testing... but there are still many
 open problems that need to be solved
