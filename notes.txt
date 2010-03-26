@@ -1,5 +1,12 @@
 
-still may be nice to show GoodDay indexed by Day with implications
+think about how combinatorial explosions relate to uni-quant
+
+maybe link to now-private lemmachine github url
+
+- maybe show an example of rack services interacting
+
+====================
+maybe mention stub method in lemmachine
 
 ====================
 

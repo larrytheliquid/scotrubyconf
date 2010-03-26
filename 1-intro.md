@@ -82,6 +82,7 @@ it takes a lot of willpower to admit that the way you've been thinking
 all your life has been wrong, and there is a better way, and that is
 how i feel now about dynamically typed languages (as well as
 trivial statical typing)
+... came from dynamic langs + GP development which is a highly dynamic field
 
 i think that this type theory is industry-changing, not some
 interesting but ultimately irrelevant topic... i now see
@@ -213,9 +214,9 @@ types... like imagine needing to define addition of every single number!
 
 <div style="display: none">
 
-an emphasis on inductive
-("recursive") definitions is placed that limit what you must write
-out to the base & recursive cases
+instead of making your datatype list out every (infinite) natural
+number, you make it inductive ("recursive"), limiting what you must
+write out to the base & recursive cases
 
 !SLIDE subsection
 
@@ -247,7 +248,9 @@ are verified to be coverage complete
 type to interface with another library that uses the bigger type
 
 notice that this specialized type is essentially an implicit test for
-all functions using it... all those functions will only work for GoodDays
+all functions using it... all those functions will only work for
+GoodDays... and they are implicit tests because they are verified to
+be coverage complete
 
 notice that constructors across multiple types can have same names, and can be
 differentiated by the type signature they are in
@@ -314,7 +317,7 @@ you can see here why these are called "dependent" types, any type can
 be given a label for the value it can represent, which can be reused
 or "depended upon" in later parts of the type signature, from left to right
 
-notice that our function call happens in the type signature
+notice that our function call (isGoodDay) happens in the type signature
 precondition not used here, just for readability
 
 implicit arguments do not need to be explicitly passed when calling
@@ -367,7 +370,7 @@ type and use preconditions instead if we wanted to
 
 !SLIDE subsection
 
-More implicit tests
+Advanced implicit tests
 =======================
 
 <div style="display: none">
@@ -516,6 +519,9 @@ if we break the sorted list semantics, we get a compilation error
 
 here a large part of the semantics of the insert function is captured by its
 type (without looking at the implementation)!!!
+... the specific algorithm is hidden in the implementation, but the
+abstract properties are captured in the type... a new, more revealing
+form of abstraction
 
 ... the epitome of types as documentation that can't go out of date
 (similar to how more familiar explicit tests act as documentation that
@@ -557,7 +563,8 @@ represented some previous check, prone to error
 
 !SLIDE
 # Curry-Howard isomorphism #
-
+  
+    -- extent in non-dependent types
     dayIsInhabited : Day
     dayIsInhabited = Thursday
 
@@ -629,7 +636,7 @@ respect to the compiler... these can be reused in other proofs as
 language, not arbitrary reuse according to conventions
 
 if you are serious about testing, it's hard to go back to any language
-that can't semantically encode tests after dependent
+that can't semantically encode tests as proofs after dependent
 types... especially so elegantly in 2 lines of code... it is beautiful
 
 i've been working on an agda project for 2 months that i haven't
@@ -716,6 +723,12 @@ what is a unit test and what is an integration test is relative
 prove statements between several interacting services
 ... cures the problem of the explosion of tiny services that must be
 somehow confirmed to work together
+
+once you have a universally quantified proof that has type checked in
+some file, you can import & reuse it in another file without having
+to re-typcheck... because it's a checked proof you can trust in it,
+thus you solve many integration test preformance problems by breaking
+things up into isolated, yet reusable services + proofs about them
 
 !SLIDE
 # Existential quantification
@@ -879,7 +892,7 @@ check!!! (refactoring)
 an alternative representation of GoodDay that directly expresses the
 relationship between the two types
 
-we get toDay "for free" & don't really need it
+we get toDay "for free"
 
 !SLIDE
     goodDaysAreGood : {day : Day} → 
@@ -889,6 +902,10 @@ we get toDay "for free" & don't really need it
     goodDaysAreGood Sunday = refl
 
     goodDaysAreNotWeekdays : {day : Day} → 
-      GoodDay day → WeekDay day ≡ false
+      GoodDay day → isWeekDay day ≡ false
     goodDaysAreNotWeekdays good 
       rewrite goodDaysAreGood good = refl
+
+<div style="display: none">
+
+in fact, we don't even really need toDay
