@@ -147,7 +147,7 @@ which become easier to introduce in large applications
 * testing & comprehending a large growing suite
 * testing integration of highly cohesive & loosely coupled services
 * relying on trust that a library works for our use case
-* knowing where runtime errors could have occurred
+* knowing where errors could have occurred
 
 <div style="display: none">
 
@@ -301,6 +301,32 @@ been torn down
 
 !SLIDE
     fromDay : (day : Day) → 
+              ↑ (isGoodDay day) → 
+              GoodDay
+    fromDay Friday   = Friday
+    fromDay Saturday = Saturday
+    fromDay Sunday   = Sunday
+    fromDay _        = Friday
+
+    cannotComplete : GoodDay
+    cannotComplete = fromDay Tuesday
+
+    canComplete : GoodDay
+    canComplete = fromDay Sunday (record {})
+
+<div style="display: none">
+
+you can see here why these are called "dependent" types, any type can
+be given a label for the value it can represent, which can be reused
+or "depended upon" in later parts of the type signature, from left to right
+
+notice that our function call (isGoodDay) happens in the type signature
+precondition not used here, just for readability
+
+here we cannot finish the application of Tuesday
+
+!SLIDE
+    fromDay : (day : Day) → 
               {precondition : ↑ (isGoodDay day)} → 
               GoodDay
     fromDay Friday   = Friday
@@ -311,14 +337,10 @@ been torn down
     compileError : GoodDay
     compileError = fromDay Tuesday
 
+    compiles : GoodDay
+    compiles = fromDay Sunday
+
 <div style="display: none">
-
-you can see here why these are called "dependent" types, any type can
-be given a label for the value it can represent, which can be reused
-or "depended upon" in later parts of the type signature, from left to right
-
-notice that our function call (isGoodDay) happens in the type signature
-precondition not used here, just for readability
 
 implicit arguments do not need to be explicitly passed when calling
 the function
@@ -407,7 +429,7 @@ simple polymorphic cons-based or "linked" list
     data Vec (A : Set) : ℕ → Set where
       []  : Vec A zero
       _∷_ : {n : ℕ} (x : A) (xs : Vec A n) →
-            Vec A (suc n)
+            Vec A (1 + n)
 
     bool-vec : Vec Bool 3
     bool-vec = false ∷ true ∷ false ∷ []
@@ -877,6 +899,8 @@ check!!! (refactoring)
 
 !SLIDE
 # Fin #
+
+## [github.com/larrytheliquid/scotrubyconf](http://github.com/larrytheliquid/scotrubyconf) ##
 
 !SLIDE
     data GoodDay : Day → Set where
